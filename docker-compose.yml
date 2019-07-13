@@ -1,0 +1,11 @@
+version: "3"
+services:
+  openconnect:
+    image: markusmcnugen/openconnect:latest
+    container_name: openconnect
+    hostname: openconnect
+    ports:
+      - 4443:4443
+      - 4443:4443/udp
+    volumes:
+      - ./config:/config
