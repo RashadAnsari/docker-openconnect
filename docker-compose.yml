@@ -4,6 +4,7 @@ services:
     image: markusmcnugen/openconnect:latest
     container_name: openconnect
     hostname: openconnect
+    restart: always
     ports:
       - 4443:4443
       - 4443:4443/udp
