@@ -4,6 +4,7 @@ services:
     image: markusmcnugen/openconnect:latest
     container_name: openconnect
     hostname: openconnect
+    privileged: true
     restart: always
     ports:
       - 4443:4443
