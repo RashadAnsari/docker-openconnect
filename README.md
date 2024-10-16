@@ -5,16 +5,20 @@
 # OpenConnect VPN Server
 OpenConnect VPN server is an SSL VPN server that is secure, small, fast and configurable. It implements the OpenConnect SSL VPN protocol and has also (currently experimental) compatibility with clients using the AnyConnect SSL VPN protocol. The OpenConnect protocol provides a dual TCP/UDP VPN channel and uses the standard IETF security protocols to secure it. The OpenConnect client is multi-platform and available [here](http://www.infradead.org/openconnect/). Alternatively, you can try connecting using the official Cisco AnyConnect client (Confirmed working on Android).
 
-This container is an automated build linked to [alpine](https://hub.docker.com/_/alpine/). The dockerfile was written to always download and compile the latest release of OpenConnect VPN server when built. 
+The dockerfile was written to always download and compile the latest release of OpenConnect VPN server when built.*
+
+\* OpenConnect dev team has taken to listing unreleased versions on the page I pull with curl to get the current version so I had to modify the command to pull the second most recent version instead. Since I dont control this page it is subject to change back at anytime, keep that in mind if you fork this container.
 
 [Homepage](https://ocserv.gitlab.io/www/platforms.html)
+
 [Documentation](https://ocserv.gitlab.io/www/manual.html)
+
 [Source](https://gitlab.com/ocserv/ocserv)
 
 # Docker Features
-* Base: Alpine Edge
-* Latest OpenConnect Server 0.11.10
-* Size: 57.1MB 
+* Base: Alpine 3.13
+* Latest OpenConnect Server 1.1.2
+* Size: 63.6MB 
 * Modification of the listening port for more networking versatility
 * Customizing the DNS servers used for queries over the VPN
 * Supports tunneling all traffic over the VPN or tunneling only specific routes via split-include
@@ -123,11 +127,6 @@ After a user successfully logins to the VPN a message will be logged in the dock
 ```
 [info] User markusmcnugen Disconnected - Bytes In: 175856 Bytes Out: 4746819 Duration:63
 ```
-
-# Issues
-If you are having issues with this container please submit an issue on GitHub.
-Please provide logs, docker version and other information that can simplify reproducing the issue.
-Using the latest stable verison of Docker is always recommended. Support for older version is on a best-effort basis.
 
 # Building the container yourself
 To build this container, clone the repository and cd into it.

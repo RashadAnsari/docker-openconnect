@@ -1,4 +1,4 @@
-FROM alpine:3.7
+FROM alpine:latest
 
 MAINTAINER MarkusMcNugen
 # Forked from TommyLau for unRAID
@@ -10,27 +10,39 @@ RUN buildDeps=" \
 		curl \
 		g++ \
 		gawk \
+		geoip \
 		gnutls-dev \
 		gpgme \
+		krb5-dev \
+		libc-dev \
 		libev-dev \
 		libnl3-dev \
+		libproxy \
 		libseccomp-dev \
+		libtasn1 \
 		linux-headers \
 		linux-pam-dev \
 		lz4-dev \
 		make \
+		oath-toolkit-liboath \
+		oath-toolkit-libpskc \
+		p11-kit \
+		pcsc-lite-libs \
+		protobuf-c \
 		readline-dev \
+		scanelf \
+		stoken-dev \
 		tar \
+		tpm2-tss-esys \
 		xz \
 	"; \
 	set -x \
 	&& apk add --update --virtual .build-deps $buildDeps \
-	&& export OC_VERSION=$(curl --silent "https://ocserv.gitlab.io/www/changelog.html" 2>&1 | grep -m 1 'Version' | awk '/Version/ {print $2}') \
+	# The commented out line below grabs the most recent version of OC from the page which may be an unreleased version
+	# && export OC_VERSION=$(curl --silent "https://ocserv.gitlab.io/www/changelog.html" 2>&1 | grep -m 1 'Version' | awk '/Version/ {print $2}') \
+	# The line below grabs the 2nd most recent version of OC
+	&& export OC_VERSION=$(curl --silent "https://ocserv.gitlab.io/www/changelog.html" 2>&1 | grep -m 2 'Version' | tail -n 1 | awk '/Version/ {print $2}') \
 	&& curl -SL "ftp://ftp.infradead.org/pub/ocserv/ocserv-$OC_VERSION.tar.xz" -o ocserv.tar.xz \
-	&& curl -SL "ftp://ftp.infradead.org/pub/ocserv/ocserv-$OC_VERSION.tar.xz.sig" -o ocserv.tar.xz.sig \
-	&& gpg --keyserver pool.sks-keyservers.net --recv-key 7F343FA7 \
-	&& gpg --keyserver pool.sks-keyservers.net --recv-key 96865171 \
-	&& gpg --verify ocserv.tar.xz.sig \
 	&& mkdir -p /usr/src/ocserv \
 	&& tar -xf ocserv.tar.xz -C /usr/src/ocserv --strip-components=1 \
 	&& rm ocserv.tar.xz* \
@@ -39,18 +51,21 @@ RUN buildDeps=" \
 	&& make \
 	&& make install \
 	&& cd / \
-	&& rm -fr /usr/src/ocserv \
+	&& rm -rf /usr/src/ocserv \
 	&& runDeps="$( \
-		scanelf --needed --nobanner /usr/local/sbin/ocserv \
-			| awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
-			| xargs -r apk info --installed \
-			| sort -u \
-		)" \
-	&& apk add --virtual .run-deps $runDeps gnutls-utils iptables \
+			scanelf --needed --nobanner /usr/local/sbin/ocserv \
+				| awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
+				| xargs -r apk info --installed \
+				| sort -u \
+			)" \
+	&& apk add --update --virtual .run-deps $runDeps gnutls-utils iptables \
 	&& apk del .build-deps \
 	&& rm -rf /var/cache/apk/* 
+	
+RUN apk add --update bash rsync ipcalc sipcalc ca-certificates rsyslog logrotate runit \
+	&& rm -rf /var/cache/apk/* 
 
-RUN apk add --update bash rsync ipcalc sipcalc ca-certificates rsyslog logrotate runit
+RUN update-ca-certificates
 
 ADD ocserv /etc/default/ocserv
 
